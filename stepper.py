@@ -98,17 +98,18 @@ class stepper:
           steps.append(int((64*abs(degs[i]))//45))
           clockwise.append( (degs[i]<0))
       m = max(steps)
+      print("Steps:", steps, "m =", m)
       for i in range(m):
           for halfstep in range(8):
-              for axis in len(axes):
-                  if steps[axis] <= i:
+              for axis in range(len(axes)):
+                  if steps[axis] >= i:
                       if clockwise[axis]:
                           for pin in range(4):
                               GPIO.output(self.control_pins[axis][pin], self.halfstep_seq[halfstep][pin])
                       else:
                           for pin in range(4):
                               GPIO.output(self.control_pins[axis][pin], self.back_halfstep_seq[halfstep][pin])
-                  sleep(0.001)
+              sleep(0.0008)
 #      if clockwise:
 #          for i in range(steps):
 #              self.halfstep()
@@ -132,7 +133,18 @@ class stepper:
           sleep(0.002)
   def end(self):
       GPIO.cleanup()
-          
+
+if __name__ == "__main__":
+    stp = stepper
+    motor = stp(2,3,4,17)
+    motor.addMotor(14,15,18,23)
+    for i in range(2):
+        for j in range(0):
+            motor.halfstep(i)
+    motor.turnDegs([0, 1], [360,180])
+    sleep(2)
+    motor.turnDegs([1, 0], [360,-180])
+
 #          
 #if __name__ == "__main__":
 #    motor = stepper(2, 3, 4, 17)
